@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Selamat Ulang Tahun! ✨</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter & Dancing Script for romantic/festive touch -->
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        script: ['Dancing Script', 'cursive'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #fdf2f8 0%, #fae8ff 50%, #f3e8ff 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(3deg); }
+        }
+
+        .animate-float {
+            animation: float 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 15px rgba(236, 72, 153, 0.4); }
+            50% { box-shadow: 0 0 30px rgba(236, 72, 153, 0.8); }
+        }
+
+        .glow-effect {
+            animation: pulse-glow 3s infinite;
+        }
+
+        /* Flame animation */
+        @keyframes flicker {
+            0%, 100% { transform: scale(1) rotate(-2deg); opacity: 0.9; }
+            50% { transform: scale(1.1) rotate(2deg); opacity: 1; filter: brightness(1.2); }
+        }
+        .candle-flame {
+            animation: flicker 0.6s infinite alternate;
+            transform-origin: bottom center;
+        }
+    </style>
+</head>
+<body class="text-slate-700 antialiased selection:bg-pink-300 selection:text-pink-900">
+
+    <!-- Background Audio Simulation -->
+    <audio id="bgMusic" loop>
+        <source src="https://actions.google.com/sounds/v1/ambiences/gentle_wind_chimes.ogg" type="audio/ogg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <!-- Floating Audio Control Button -->
+    <div class="fixed bottom-6 right-6 z-50">
+    </div>
+
+    <!-- SECTION 1: WELCOME / LANDING SCREEN -->
+    <section id="welcomeScreen" class="min-h-screen flex flex-col items-center justify-center relative p-6 overflow-hidden">
+        <!-- Decorative Background Elements -->
+        <div class="absolute -top-20 -left-20 w-72 h-72 bg-pink-300/30 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -bottom-20 -right-20 w-80 h-80 bg-purple-300/30 rounded-full blur-3xl pointer-events-none"></div>
+        
+        <div class="glass-card max-w-md w-full p-8 rounded-3xl shadow-2xl text-center relative z-10 border border-white/60 animate-float">
+            <div class="w-20 h-20 bg-gradient-to-tr from-pink-500 to-rose-400 text-white rounded-2xl mx-auto flex items-center justify-center shadow-lg shadow-pink-500/30 mb-6 text-3xl">
+                <i class="fa-solid fa-cake-candles"></i>
+            </div>
+            
+            <span class="inline-block px-4 py-1.5 bg-pink-100 text-pink-600 rounded-full text-xs font-semibold tracking-wider uppercase mb-3">Spesial Hari Ini</span>
+            <h1 class="font-script text-5xl font-bold text-slate-800 mb-2">Selamat Ulang Tahun!</h1>
+            <p class="text-slate-500 text-sm mb-8">Seseorang yang sangat spesial sedang merayakan hari bahagianya. Siap membuka kejutan ini?</p>
+            
+            <button onclick="startCelebration()" class="w-full py-4 px-6 bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-semibold rounded-2xl shadow-lg shadow-pink-500/30 transition transform active:scale-95 flex items-center justify-center space-x-3 text-lg">
+                <span>Buka Kejutan</span>
+                <i class="fa-solid fa-arrow-right"></i>
+            </button>
+        </div>
+    </section>
+
+    <!-- SECTION 2: MAIN APP (Hidden initially) -->
+    <div id="mainApp" class="hidden min-h-screen flex flex-col">
+        
+        <!-- Navigation Header -->
+        <header class="sticky top-0 z-40 glass-nav border-b border-pink-100/50 shadow-sm">
+            <div class="max-w-4xl mx-auto px-4 py-3 flex justify-between items-center">
+                <div class="flex items-center space-x-2">
+                    <div class="w-9 h-9 bg-pink-500 rounded-xl flex items-center justify-center text-white shadow-md shadow-pink-500/30">
+                        <i class="fa-solid fa-gift"></i>
+                    </div>
+                    <span class="font-script text-2xl font-bold bg-gradient-to-r from-pink-600 to-rose-600 bg-clip-text text-transparent">Happy Birthday</span>
+                </div>
+                
+                <nav class="flex space-x-1 sm:space-x-2">
+                    <button onclick="switchTab('home')" id="navHome" class="px-3 sm:px-4 py-2 rounded-xl text-sm font-medium transition bg-pink-500 text-white shadow-md shadow-pink-500/20">
+                        <i class="fa-solid fa-house mr-1.5"></i> <span class="hidden sm:inline">Beranda</span>
+                    </button>
+                    <button onclick="switchTab('cake')" id="navCake" class="px-3 sm:px-4 py-2 rounded-xl text-sm font-medium transition text-slate-600 hover:bg-pink-100/60">
+                        <i class="fa-solid fa-cake-candles mr-1.5"></i> <span class="hidden sm:inline">Kue & Doa</span>
+                    </button>
+                    <button onclick="switchTab('gallery')" id="navGallery" class="px-3 sm:px-4 py-2 rounded-xl text-sm font-medium transition text-slate-600 hover:bg-pink-100/60">
+                        <i class="fa-solid fa-images mr-1.5"></i> <span class="hidden sm:inline">Galeri Foto</span>
+                    </button>
+                </nav>
+            </div>
+        </header>
+
+        <!-- Main Content Container -->
+        <main class="flex-grow max-w-4xl w-full mx-auto p-4 sm:p-6 pb-24">
+            
+            <!-- TAB 1: HOME / GREETING -->
+            <div id="tabHome" class="space-y-6 tab-content">
+                <!-- Hero Greeting Card -->
+                <div class="glass-card rounded-3xl p-6 sm:p-10 shadow-xl border border-white/60 relative overflow-hidden">
+                    <div class="absolute -right-10 -bottom-10 w-48 h-48 bg-pink-200/40 rounded-full blur-2xl"></div>
+                    
+                    <div class="text-center max-w-xl mx-auto relative z-10">
+                        <div class="inline-block p-3 bg-pink-100 text-pink-500 rounded-2xl mb-4 text-2xl">
+                            <i class="fa-solid fa-heart animate-bounce"></i>
+                        </div>
+                        
+                        <h2 class="font-script text-4xl sm:text-6xl font-bold text-slate-800 mb-4">Selamat Ulang Tahun, <span id="recipientName" class="text-pink-600">Sayangku!</span></h2>
+                        
+                        <!-- Typing effect box -->
+                        <div class="bg-white/60 rounded-2xl p-5 border border-pink-100 shadow-inner mb-8 text-left min-h-[120px] flex items-center">
+                            <p id="typedText" class="text-slate-700 text-base sm:text-lg leading-relaxed font-light"></p>
+                        </div>
+                        
+                        <div class="flex flex-wrap justify-center gap-4">
+                            <button onclick="triggerConfettiBurst()" class="px-6 py-3 bg-gradient-to-r from-pink-500 to-rose-500 text-white font-semibold rounded-xl shadow-lg shadow-pink-500/25 hover:opacity-95 transition transform active:scale-95 flex items-center space-x-2">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                                <span>Taburkan Konfeti</span>
+                            </button>
+                            <button onclick="switchTab('cake')" class="px-6 py-3 bg-white text-pink-600 border border-pink-200 font-semibold rounded-xl shadow-md hover:bg-pink-50 transition flex items-center space-x-2">
+                                <i class="fa-solid fa-cake-candles"></i>
+                                <span>Potong Kue</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interactive Gift Box Section -->
+                <div class="glass-card rounded-3xl p-6 sm:p-8 shadow-xl border border-white/60 text-center">
+                    <h3 class="text-xl font-bold text-slate-800 mb-2">Kotak Hadiah Misterius 🎁</h3>
+                    <p class="text-slate-500 text-sm mb-6">Klik kotak hadiah di bawah ini untuk melihat pesan spesial di dalamnya!</p>
+                    
+                    <div id="giftBoxContainer" class="cursor-pointer inline-block transition transform hover:scale-105 my-4" onclick="openGiftBox()">
+                        <div id="giftBox" class="w-32 h-32 bg-gradient-to-tr from-rose-500 to-pink-500 rounded-2xl shadow-xl flex items-center justify-center relative mx-auto border-4 border-pink-200 glow-effect">
+                            <!-- Ribbon -->
+                            <div class="absolute inset-y-0 w-8 bg-amber-300"></div>
+                            <div class="absolute inset-x-0 h-8 bg-amber-300"></div>
+                            <div class="absolute -top-6 text-amber-400 text-4xl drop-shadow-md">
+                                <i class="fa-solid fa-bow-tie"></i>
+                            </div>
+                            <i id="giftIcon" class="fa-solid fa-gift text-white text-4xl relative z-10"></i>
+                        </div>
+                        <p id="giftPromptText" class="text-xs font-semibold text-pink-600 mt-3 tracking-wide uppercase">Klik Untuk Membuka!</p>
+                    </div>
+
+                    <!-- Hidden Surprise Message inside Gift -->
+                    <div id="giftMessage" class="hidden mt-6 p-6 bg-gradient-to-r from-pink-50 to-rose-50 rounded-2xl border border-pink-200 text-center animate-fade-in max-w-lg mx-auto">
+                        <h4 class="font-script text-3xl font-bold text-pink-600 mb-2">Pesan Rahasia Untukmu ✨</h4>
+                        <p class="text-slate-600 text-sm sm:text-base leading-relaxed">
+                            "Semoga setiap langkahmu ke depan selalu diberkahi kebahagiaan, kesehatan, dan kesuksesan. Terima kasih sudah menjadi sosok yang luar biasa dan membawa begitu banyak warna indah di hidup ini. Tetaplah bersinar!"
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: CAKE & WISH -->
+            <div id="tabCake" class="hidden space-y-6 tab-content">
+                <div class="glass-card rounded-3xl p-6 sm:p-10 shadow-xl border border-white/60 text-center">
+                    <div class="max-w-lg mx-auto">
+                        <span class="inline-block px-4 py-1.5 bg-pink-100 text-pink-600 rounded-full text-xs font-semibold tracking-wider uppercase mb-3">Tradisi Ulang Tahun</span>
+                        <h3 class="font-script text-4xl font-bold text-slate-800 mb-2">Tiup Lilin & Buat Harapan</h3>
+                        <p class="text-slate-500 text-sm mb-8">Klik pada lilin di kue untuk meniupnya hingga padam, lalu buat permohonan terbaikmu!</p>
+                        
+                        <!-- Interactive Cake Illustration -->
+                        <div class="relative py-10 flex flex-col items-center justify-center bg-white/40 rounded-2xl border border-pink-100 shadow-inner mb-6">
+                            
+                            <!-- Candles & Flames container -->
+                            <div class="flex space-x-6 mb-2">
+                                <!-- Candle 1 -->
+                                <div class="flex flex-col items-center cursor-pointer group" onclick="extinguishCandle(1)">
+                                    <div id="flame1" class="candle-flame text-amber-400 text-2xl mb-1 filter drop-shadow-[0_0_8px_rgba(251,191,36,0.8)]">
+                                        <i class="fa-solid fa-fire"></i>
+                                    </div>
+                                    <div class="w-3 h-10 bg-gradient-to-r from-blue-200 via-pink-200 to-blue-300 rounded-t-sm shadow"></div>
+                                </div>
+                                <!-- Candle 2 -->
+                                <div class="flex flex-col items-center cursor-pointer group" onclick="extinguishCandle(2)">
+                                    <div id="flame2" class="candle-flame text-amber-400 text-2xl mb-1 filter drop-shadow-[0_0_8px_rgba(251,191,36,0.8)]">
+                                        <i class="fa-solid fa-fire"></i>
+                                    </div>
+                                    <div class="w-3 h-10 bg-gradient-to-r from-purple-200 via-pink-200 to-purple-300 rounded-t-sm shadow"></div>
+                                </div>
+                                <!-- Candle 3 -->
+                                <div class="flex flex-col items-center cursor-pointer group" onclick="extinguishCandle(3)">
+                                    <div id="flame3" class="candle-flame text-amber-400 text-2xl mb-1 filter drop-shadow-[0_0_8px_rgba(251,191,36,0.8)]">
+                                        <i class="fa-solid fa-fire"></i>
+                                    </div>
+                                    <div class="w-3 h-10 bg-gradient-to-r from-pink-200 via-rose-200 to-pink-300 rounded-t-sm shadow"></div>
+                                </div>
+                            </div>
+                            
+                            <!-- Cake Top Tier -->
+                            <div class="w-36 h-12 bg-pink-400 rounded-t-2xl relative shadow-md border-t-2 border-white/50 flex justify-around items-center px-2">
+                                <div class="w-3 h-3 bg-white rounded-full opacity-80"></div>
+                                <div class="w-3 h-3 bg-white rounded-full opacity-80"></div>
+                                <div class="w-3 h-3 bg-white rounded-full opacity-80"></div>
+                            </div>
+                            
+                            <!-- Cake Middle Tier -->
+                            <div class="w-48 h-14 bg-rose-400 rounded-t-xl relative shadow-md border-t-2 border-white/40 flex items-center justify-center">
+                                <div class="absolute top-2 w-full flex justify-around px-4">
+                                    <span class="text-white text-xs font-bold">🍓</span>
+                                    <span class="text-white text-xs font-bold">🍓</span>
+                                    <span class="text-white text-xs font-bold">🍓</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Cake Bottom Tier -->
+                            <div class="w-60 h-16 bg-pink-500 rounded-t-xl relative shadow-lg border-t-2 border-white/50 flex items-center justify-center">
+                                <span class="font-script text-white text-lg font-bold tracking-wider drop-shadow">Happy Birthday</span>
+                            </div>
+                            <!-- Cake Plate -->
+                            <div class="w-72 h-4 bg-slate-200 rounded-full shadow-md mt-1"></div>
+                        </div>
+
+                        <!-- Status text & Reset Button -->
+                        <div id="candleStatus" class="text-slate-600 font-medium mb-4 text-sm">
+                            Semua lilin menyala! Klik masing-masing lilin untuk meniupnya.
+                        </div>
+
+                        <div class="flex justify-center gap-3">
+                            <button onclick="resetCandles()" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-xl text-sm transition">
+                                <i class="fa-solid fa-rotate-right mr-1.5"></i> Nyalakan Lagi Lilin
+                            </button>
+                            <button onclick="makeWish()" class="px-5 py-2.5 bg-pink-500 hover:bg-pink-600 text-white font-medium rounded-xl text-sm shadow-md shadow-pink-500/20 transition">
+                                <i class="fa-solid fa-star mr-1.5"></i> Kirim Harapan
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: PHOTO GALLERY -->
+            <div id="tabGallery" class="hidden space-y-6 tab-content">
+                <div class="glass-card rounded-3xl p-6 sm:p-10 shadow-xl border border-white/60">
+                    <div class="text-center max-w-lg mx-auto mb-8">
+                        <span class="inline-block px-4 py-1.5 bg-pink-100 text-pink-600 rounded-full text-xs font-semibold tracking-wider uppercase mb-3">Kenangan Indah</span>
+                        <h3 class="font-script text-4xl font-bold text-slate-800 mb-2">Galeri</h3>
+                        <p class="text-slate-500 text-sm">Foto-foto berharga penuh senyuman dan kebahagiaan. Klik foto untuk memperbesar!</p>
+                    </div>
+
+                    <!-- Polaroid Grid -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                        
+                        <!-- Photo Card 1 -->
+                        <div class="bg-white p-4 pb-6 rounded-2xl shadow-md border border-slate-100 transform hover:-translate-y-2 hover:rotate-1 transition duration-300 cursor-pointer group" onclick="openModal('gambar 1.jpeg', 'Senyuman Terindah ✨')">
+                            <div class="aspect-square bg-slate-100 rounded-xl overflow-hidden mb-3 relative">
+                                <img src="gambar 1.jpeg" alt="Memory 1" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" onerror="this.src='https://placehold.co/400x400/fbcfe8/be185d?text=Foto+1'">
+                                <div class="absolute inset-0 bg-pink-500/10 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+                                    <i class="fa-solid fa-magnifying-glass-plus text-white text-2xl drop-shadow"></i>
+                                </div>
+                            </div>
+                            <p class="font-script text-center text-xl text-slate-700">Senyuman Terindah ✨</p>
+                        </div>
+
+                        <!-- Photo Card 2 -->
+                        <div class="bg-white p-4 pb-6 rounded-2xl shadow-md border border-slate-100 transform hover:-translate-y-2 hover:-rotate-1 transition duration-300 cursor-pointer group" onclick="openModal('gambar 2.jpeg', 'Fotbar Pertama 💖')">
+                            <div class="aspect-square bg-slate-100 rounded-xl overflow-hidden mb-3 relative">
+                                <img src="gambar 2.jpeg" alt="Memory 2" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" onerror="this.src='https://placehold.co/400x400/fbcfe8/be185d?text=Foto+2'">
+                                <div class="absolute inset-0 bg-pink-500/10 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+                                    <i class="fa-solid fa-magnifying-glass-plus text-white text-2xl drop-shadow"></i>
+                                </div>
+                            </div>
+                            <p class="font-script text-center text-xl text-slate-700">Fotbar Pertama 💖</p>
+                        </div>
+
+                        <!-- Photo Card 3 -->
+                        <div class="bg-white p-4 pb-6 rounded-2xl shadow-md border border-slate-100 transform hover:-translate-y-2 hover:rotate-1 transition duration-300 cursor-pointer group" onclick="openModal('gambar 3.jpeg', 'Gambar Lucu :3')">
+                            <div class="aspect-square bg-slate-100 rounded-xl overflow-hidden mb-3 relative">
+                                <img src="gambar 3.jpeg" alt="Memory 3" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" onerror="this.src='https://placehold.co/400x400/fbcfe8/be185d?text=Foto+3'">
+                                <div class="absolute inset-0 bg-pink-500/10 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+                                    <i class="fa-solid fa-magnifying-glass-plus text-white text-2xl drop-shadow"></i>
+                                </div>
+                            </div>
+                            <p class="font-script text-center text-xl text-slate-700">Gambar Lucu :3</p>
+                        </div>
+
+                        <!-- Photo Card 4 -->
+                        <div class="bg-white p-4 pb-6 rounded-2xl shadow-md border border-slate-100 transform hover:-translate-y-2 hover:-rotate-1 transition duration-300 cursor-pointer group" onclick="openModal('gambar 4.jpeg', 'Orang Lucu🌸')">
+                            <div class="aspect-square bg-slate-100 rounded-xl overflow-hidden mb-3 relative">
+                                <img src="gambar 4.jpeg" alt="Memory 4" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" onerror="this.src='https://placehold.co/400x400/fbcfe8/be185d?text=Foto+4'">
+                                <div class="absolute inset-0 bg-pink-500/10 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+                                    <i class="fa-solid fa-magnifying-glass-plus text-white text-2xl drop-shadow"></i>
+                                </div>
+                            </div>
+                            <p class="font-script text-center text-xl text-slate-700">Orang Lucu 🌸</p>
+                        </div>
+
+                        <!-- Photo Card 5 -->
+                        <div class="bg-white p-4 pb-6 rounded-2xl shadow-md border border-slate-100 transform hover:-translate-y-2 hover:rotate-1 transition duration-300 cursor-pointer group" onclick="openModal('gambar 5.jpeg', 'Foto Ultah Tahun Lalu 😄')">
+                            <div class="aspect-square bg-slate-100 rounded-xl overflow-hidden mb-3 relative">
+                                <img src="gambar 5.jpeg" alt="Memory 5" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" onerror="this.src='https://placehold.co/400x400/fbcfe8/be185d?text=Foto+5'">
+                                <div class="absolute inset-0 bg-pink-500/10 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+                                    <i class="fa-solid fa-magnifying-glass-plus text-white text-2xl drop-shadow"></i>
+                                </div>
+                            </div>
+                            <p class="font-script text-center text-xl text-slate-700">Foto Ultah Tahun Lalu 😄</p>
+                        </div>
+
+                        <!-- Photo Card 6 -->
+                        <div class="bg-white p-4 pb-6 rounded-2xl shadow-md border border-slate-100 transform hover:-translate-y-2 hover:-rotate-1 transition duration-300 cursor-pointer group" onclick="openModal('gambar 6.jpeg', 'Waktu Spesial 🌟')">
+                            <div class="aspect-square bg-slate-100 rounded-xl overflow-hidden mb-3 relative">
+                                <img src="gambar 6.jpeg" alt="Memory 6" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" onerror="this.src='https://placehold.co/400x400/fbcfe8/be185d?text=Foto+6'">
+                                <div class="absolute inset-0 bg-pink-500/10 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+                                    <i class="fa-solid fa-magnifying-glass-plus text-white text-2xl drop-shadow"></i>
+                                </div>
+                            </div>
+                            <p class="font-script text-center text-xl text-slate-700">Waktu Spesial 🌟</p>
+                        </div>
+                        <p class="text-slate-500 text-sm">masih banyak foto makanya tidak cukup heheheee:]</p>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- Footer -->
+        <footer class="py-6 text-center text-slate-400 text-xs border-t border-pink-100/60 mt-auto">
+            <p>Dibuat dengan penuh cinta untuk perayaan spesial hari ulang tahunmu ❤️</p>
+        </footer>
+    </div>
+
+    <!-- IMAGE ZOOM MODAL -->
+    <div id="imageModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden items-center justify-center p-4 transition-opacity duration-300" onclick="closeModal()">
+        <div class="relative max-w-2w max-h-[90vh] bg-white p-4 rounded-3xl shadow-2xl max-w-lg w-full" onclick="event.stopPropagation()">
+            <button onclick="closeModal()" class="absolute -top-3 -right-3 w-10 h-10 bg-pink-500 hover:bg-pink-600 text-white rounded-full flex items-center justify-center shadow-lg transition">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <div class="aspect-square bg-slate-100 rounded-2xl overflow-hidden mb-4">
+                <img id="modalImg" src="" alt="Zoomed Photo" class="w-full h-full object-cover">
+            </div>
+            <p id="modalCaption" class="font-script text-2xl text-center text-slate-800"></p>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // Music toggle functionality
+        let isPlaying = false;
+        const bgMusic = document.getElementById('bgMusic');
+        const musicIcon = document.getElementById('musicIcon');
+
+        function toggleMusic() {
+            if (isPlaying) {
+                bgMusic.pause();
+                musicIcon.className = "fa-solid fa-music text-xl";
+                isPlaying = false;
+            } else {
+                bgMusic.play().then(() => {
+                    musicIcon.className = "fa-solid fa-volume-high text-xl";
+                    isPlaying = true;
+                }).catch(e => {
+                    console.log("Audio autoplay restricted or failed:", e);
+                });
+            }
+        }
+
+        // Start celebration from welcome screen
+        function startCelebration() {
+            document.getElementById('welcomeScreen').classList.add('hidden');
+            document.getElementById('mainApp').classList.remove('hidden');
+            
+            // Try playing audio automatically upon interaction
+            if (!isPlaying) {
+                bgMusic.play().then(() => {
+                    musicIcon.className = "fa-solid fa-volume-high text-xl";
+                    isPlaying = true;
+                }).catch(e => {});
+            }
+
+            // Trigger initial welcome confetti
+            triggerConfettiBurst();
+
+            // Start typing effect
+            startTypingEffect();
+        }
+
+        // Navigation tabs switching
+        function switchTab(tabId) {
+            // Hide all tabs
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.classList.add('hidden'));
+
+            // Remove active style from all nav buttons
+            const navButtons = ['navHome', 'navCake', 'navGallery'];
+            navButtons.forEach(btnId => {
+                const btn = document.getElementById(btnId);
+                btn.className = "px-3 sm:px-4 py-2 rounded-xl text-sm font-medium transition text-slate-600 hover:bg-pink-100/60";
+            });
+
+            // Show selected tab and activate button
+            if (tabId === 'home') {
+                document.getElementById('tabHome').classList.remove('hidden');
+                document.getElementById('navHome').className = "px-3 sm:px-4 py-2 rounded-xl text-sm font-medium transition bg-pink-500 text-white shadow-md shadow-pink-500/20";
+            } else if (tabId === 'cake') {
+                document.getElementById('tabCake').classList.remove('hidden');
+                document.getElementById('navCake').className = "px-3 sm:px-4 py-2 rounded-xl text-sm font-medium transition bg-pink-500 text-white shadow-md shadow-pink-500/20";
+            } else if (tabId === 'gallery') {
+                document.getElementById('tabGallery').classList.remove('hidden');
+                document.getElementById('navGallery').className = "px-3 sm:px-4 py-2 rounded-xl text-sm font-medium transition bg-pink-500 text-white shadow-md shadow-pink-500/20";
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Typing effect for heartfelt greeting
+        const greetingMessage = "Selamat ulang tahun ya! Semoga di usia yang baru ini, segala impian dan harapanmu satu per satu menjadi kenyataan. Semoga kebahagiaan, kesehatan, dan keberkahan selalu menyertai setiap langkahmu. Jangan pernah lupakan betapa berharganya dirimu!";
+        let typedIndex = 0;
+        let isTypingStarted = false;
+
+        function startTypingEffect() {
+            if (isTypingStarted) return;
+            isTypingStarted = true;
+            
+            const typedTextElement = document.getElementById('typedText');
+            typedTextElement.innerHTML = "";
+            typedIndex = 0;
+
+            function typeWriter() {
+                if (typedIndex < greetingMessage.length) {
+                    typedTextElement.innerHTML += greetingMessage.charAt(typedIndex);
+                    typedIndex++;
+                    setTimeout(typeWriter, 35);
+                }
+            }
+            typeWriter();
+        }
+
+        // Confetti burst helper
+        function triggerConfettiBurst() {
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 },
+                colors: ['#ec4899', '#f43f5e', '#fb7185', '#fbcfe8', '#fbbf24']
+            });
+        }
+
+        // Gift box interactive opening
+        let isGiftOpened = false;
+        function openGiftBox() {
+            if (isGiftOpened) return;
+            isGiftOpened = true;
+
+            const giftBox = document.getElementById('giftBox');
+            const giftIcon = document.getElementById('giftIcon');
+            const giftPromptText = document.getElementById('giftPromptText');
+            const giftMessage = document.getElementById('giftMessage');
+
+            giftBox.classList.remove('glow-effect');
+            giftBox.classList.add('bg-gradient-to-tr', 'from-pink-400', 'to-purple-400', 'scale-95');
+            giftIcon.className = "fa-solid fa-face-smile-wink text-white text-4xl relative z-10 animate-bounce";
+            giftPromptText.textContent = "Hore! Terbuka!";
+            giftPromptText.classList.remove('text-pink-600');
+            giftPromptText.classList.add('text-purple-600');
+
+            giftMessage.classList.remove('hidden');
+            triggerConfettiBurst();
+        }
+
+        // Candle blowing simulation
+        let blownCandles = { 1: false, 2: false, 3: false };
+
+        function extinguishCandle(candleNum) {
+            const flame = document.getElementById(`flame${candleNum}`);
+            if (!blownCandles[candleNum]) {
+                flame.style.display = 'none';
+                blownCandles[candleNum] = true;
+                
+                checkAllCandlesBlown();
+            }
+        }
+
+        function checkAllCandlesBlown() {
+            const allBlown = blownCandles[1] && blownCandles[2] && blownCandles[3];
+            const statusEl = document.getElementById('candleStatus');
+
+            if (allBlown) {
+                statusEl.innerHTML = "🎉 Yeay! Semua lilin telah padam! Semoga semua doa dan harapanmu terkabul!";
+                statusEl.classList.add('text-pink-600', 'font-bold');
+                triggerConfettiBurst();
+            } else {
+                statusEl.innerHTML = "Bagus! Tiup lilin yang tersisa.";
+            }
+        }
+
+        function resetCandles() {
+            blownCandles = { 1: false, 2: false, 3: false };
+            for (let i = 1; i <= 3; i++) {
+                document.getElementById(`flame${i}`).style.display = 'block';
+            }
+            const statusEl = document.getElementById('candleStatus');
+            statusEl.innerHTML = "Lilin kembali menyala! Silakan klik untuk meniupnya lagi.";
+            statusEl.classList.remove('text-pink-600', 'font-bold');
+        }
+
+        function makeWish() {
+            // Extinguish all and celebrate
+            for (let i = 1; i <= 3; i++) {
+                document.getElementById(`flame${i}`).style.display = 'none';
+                blownCandles[i] = true;
+            }
+            const statusEl = document.getElementById('candleStatus');
+            statusEl.innerHTML = "⭐ Harapanmu telah dikirim ke semesta! Selamat Ulang Tahun!";
+            statusEl.classList.add('text-pink-600', 'font-bold');
+            
+            // Big confetti celebration
+            var duration = 3 * 1000;
+            var animationEnd = Date.now() + duration;
+            var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 999 };
+
+            function randomInRange(min, max) {
+                return Math.random() * (max - min) + min;
+            }
+
+            var interval = setInterval(function() {
+                var timeLeft = animationEnd - Date.now();
+                if (timeLeft <= 0) {
+                    return clearInterval(interval);
+                }
+                var particleCount = 50 * (timeLeft / duration);
+                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
+                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
+            }, 250);
+        }
+
+        // Photo Gallery Modal Functions
+        function openModal(imgSrc, captionText) {
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImg');
+            const modalCaption = document.getElementById('modalCaption');
+
+            modalImg.src = imgSrc;
+            modalCaption.textContent = captionText;
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('imageModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+    </script>
+</body>
+</html>
